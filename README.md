@@ -391,6 +391,6 @@ MIT © [Tecocraft](https://github.com/tecocraft)
 
 ## 🙋‍♀️ Support
 
-- 📧 Email: support@tecocraft.com
-- 🐛 Issues: [GitHub Issues](https://github.com/chiragjanjmeratecocraft/Flutter-Dynamic-Link-SDK/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/chiragjanjmeratecocraft/Flutter-Dynamic-Link-SDK/discussions)
+- 📧 Email: support@linkhas.com
+- 🐛 Issues: [GitHub Issues](https://github.com/linkhas/Flutter-Dynamic-Link-SDK/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/linkhas/Flutter-Dynamic-Link-SDK/discussions)
