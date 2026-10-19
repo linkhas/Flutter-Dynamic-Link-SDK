@@ -45,7 +45,7 @@ class _DeeplinkExampleAppState extends State<DeeplinkExampleApp> {
     if (screen == 'product' || screen == 'pages' || productId != null) {
       final id = productId ?? 'UNKNOWN';
       final product = _demoProducts.firstWhere(
-        (p) => p.id == id,
+            (p) => p.id == id,
         orElse: () => Product(id: id, name: 'Product $id', price: 0, description: 'Product opened from deep link'),
       );
       nav.push(MaterialPageRoute<void>(builder: (_) => ProductDetailsScreen(product: product)));
@@ -80,7 +80,7 @@ class _DeeplinkExampleAppState extends State<DeeplinkExampleApp> {
 
     try {
       final response = await MyDeeplinkSdk.generatePublicLink(
-        clientId: 'cli_8c3cc27f2c8f0e9fcec30f8f3b0044f00b6be4cd87929344e5d347b4cd8e219e',
+        clientId: 'cli_f7fe1b667a6c148e254918493115490c89a760b840bbc173101a0e158822e0f8',
         body: {
           "title": product.name,
           "description": product.description,

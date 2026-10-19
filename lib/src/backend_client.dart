@@ -7,10 +7,10 @@ import 'package:http/http.dart' as http;
 import 'exceptions.dart';
 import 'sdk_config.dart';
 
-const String kDefaultDynamicLinkBaseUrl = 'https://backend-dynamiclink.tecocraft.us';
-const Duration _kRequestTimeout = Duration(seconds: 60);
+const String kDefaultDynamicLinkBaseUrl = 'https://backend.linkhas.com';
+const Duration _kRequestTimeout = Duration(seconds: 6000);
 
-/// Calls Tecocraft dynamic-link HTTP APIs.
+/// Calls  dynamic-link HTTP APIs.
 class DynamicLinkBackendClient {
   DynamicLinkBackendClient(this._config);
 
@@ -42,17 +42,17 @@ class DynamicLinkBackendClient {
     try {
       res = await http
           .get(
-            uri,
-            headers: headers,
-          )
+        uri,
+        headers: headers,
+      )
           .timeout(_kRequestTimeout);
       debugPrint("this is on call $res");
     } on TimeoutException {
       debugPrint(
         'MyDeeplinkSdk.http timeout\n'
-        '  method: GET\n'
-        '  url: $uri\n'
-        '  after: ${_kRequestTimeout.inSeconds}s',
+            '  method: GET\n'
+            '  url: $uri\n'
+            '  after: ${_kRequestTimeout.inSeconds}s',
       );
       rethrow;
     } catch (error) {
@@ -88,7 +88,7 @@ class DynamicLinkBackendClient {
       'app_id': config.appId,
       'device_type': config.deviceType,
     });
-    final headers = _headers(includeJsonAccept: false,);
+    final headers = _headers(includeJsonAccept: false, contentTypeJson: false);
     _logRequest(
       method: 'POST',
       uri: uri,
@@ -164,10 +164,10 @@ class DynamicLinkBackendClient {
   }) {
     debugPrint(
       'MyDeeplinkSdk.http request\n'
-      '  method: $method\n'
-      '  url: $uri\n'
-      '  headers: $headers\n'
-      '  params: $params',
+          '  method: $method\n'
+          '  url: $uri\n'
+          '  headers: $headers\n'
+          '  params: $params',
     );
   }
 
@@ -179,10 +179,10 @@ class DynamicLinkBackendClient {
   }) {
     debugPrint(
       'MyDeeplinkSdk.http response\n'
-      '  method: $method\n'
-      '  url: $uri\n'
-      '  statusCode: $statusCode\n'
-      '  body: $body',
+          '  method: $method\n'
+          '  url: $uri\n'
+          '  statusCode: $statusCode\n'
+          '  body: $body',
     );
   }
 

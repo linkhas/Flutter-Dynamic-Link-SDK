@@ -43,10 +43,10 @@ flutter pub get
 - Android → add an `intent-filter` to `android/app/src/main/AndroidManifest.xml` under your main activity:
 ```xml
 <intent-filter>
-  <action android:name="android.intent.action.VIEW"/>
-  <category android:name="android.intent.category.DEFAULT"/>
-  <category android:name="android.intent.category.BROWSABLE"/>
-  <data android:scheme="song" />
+    <action android:name="android.intent.action.VIEW"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <data android:scheme="song" />
 </intent-filter>
 ```
 
@@ -54,12 +54,12 @@ flutter pub get
 ```xml
 <key>CFBundleURLTypes</key>
 <array>
-  <dict>
+<dict>
     <key>CFBundleURLSchemes</key>
     <array>
-      <string>song</string>
+        <string>song</string>
     </array>
-  </dict>
+</dict>
 </array>
 ```
 
@@ -91,7 +91,7 @@ void _routeFromDeepLink(DynamicLinkData data) {
 - iOS: `xcrun simctl openurl booted "song://open/profile"`
 - Android: `adb shell am start -W -a android.intent.action.VIEW -d "song://open/profile" com.yourapp.package`
 
-For HTTPS Universal Links, see the full Setup section below.
+For HTTPS Universal Links / App Links, see the full Setup section below.
 
 ---
 
@@ -103,7 +103,10 @@ For HTTPS Universal Links, see the full Setup section below.
 
 ```dart
 Future<void> _bootstrapSdk() async {
-  await MyDeeplinkSdk.init({});
+  await MyDeeplinkSdk.init({
+    "app_id": "com.yourapp.package",
+    "path_short_code_hosts": ["flutterdemo.linkhas.com"]
+  });
   await MyDeeplinkSdk.startSmartLinking(
     options: SmartLinkingOptions(
       onSuccess: _routeFromDeepLink,
@@ -160,10 +163,10 @@ adb shell am start \
   com.yourapp.package
 ```
 
-If using HTTPS universal links, verify your hosted files:
+If using HTTPS App Links / Universal Links, verify your hosted domain files:
 
-- Android: `https://<your-domain>/.well-known/assetlinks.json`
-- iOS: `https://<your-domain>/apple-app-site-association`
+- Android: `https://flutterdemo.linkhas.com/.well-known/assetlinks.json`
+- iOS: `https://flutterdemo.linkhas.com/apple-app-site-association`
 
 ---
 
@@ -186,20 +189,20 @@ Scheme-based (custom scheme like `song://`):
   <action android:name="android.intent.action.VIEW"/>
   <category android:name="android.intent.category.DEFAULT"/>
   <category android:name="android.intent.category.BROWSABLE"/>
-  <data android:scheme="newSong"/>
+  <data android:scheme="TravelproductDetail"/>
 </intent-filter>
 ```
 
 App Links (HTTPS, verified):
 ```xml
 <intent-filter android:autoVerify="true">
-  <action android:name="android.intent.action.VIEW"/>
-  <category android:name="android.intent.category.DEFAULT"/>
-  <category android:name="android.intent.category.BROWSABLE"/>
-  <data
-    android:scheme="https"
-    android:host="backend-dynamiclink.tecocraft.us"
-    android:pathPrefix="/" />
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data
+        android:scheme="https"
+        android:host="flutterdemo.linkhas.com"
+        android:pathPrefix="/" />
 </intent-filter>
 ```
 
@@ -209,7 +212,7 @@ App Links (HTTPS, verified):
 
 ### 🔹 iOS (Schemes & Universal Links)
 
-1. Register your URL schemes in `ios/Runner/Info.plist` under `CFBundleURLSchemes` and `LSApplicationQueriesSchemes`:
+1. **Custom URL Schemes** — Register your URL schemes in `ios/Runner/Info.plist` under `CFBundleURLTypes` and `LSApplicationQueriesSchemes`:
 
 ```xml
 <key>CFBundleURLTypes</key>
@@ -221,7 +224,8 @@ App Links (HTTPS, verified):
     <string>com.tecocraft.sdk.my_deeplink_sdk_example</string>
     <key>CFBundleURLSchemes</key>
     <array>
-      <string>newSong</string>
+      <string>TravelproductDetail</string>
+      <string>mydeeplinksdk</string>
       <string>song</string>
     </array>
   </dict>
@@ -231,12 +235,31 @@ App Links (HTTPS, verified):
 <array>
   <string>https</string>
   <string>http</string>
-  <string>newSong</string>
+  <string>TravelproductDetail</string>
+  <string>mydeeplinksdk</string>
   <string>song</string>
 </array>
 ```
 
-2. Rebuild the iOS app after any changes to `Info.plist`.
+2. **Universal Links (Associated Domains)** — To handle HTTPS links (`https://flutterdemo.linkhas.com`) on iOS:
+    - In Xcode, select **Runner** target → **Signing & Capabilities** → **+ Capability** → **Associated Domains**.
+    - Add your domain in the format `applinks:<your-domain>`:
+      ```
+      applinks:flutterdemo.linkhas.com
+      ```
+    - Alternatively, add it directly to `ios/Runner/Runner.entitlements`:
+      ```xml
+      <key>com.apple.developer.associated-domains</key>
+      <array>
+        <string>applinks:flutterdemo.linkhas.com</string>
+      </array>
+      ```
+    - Ensure your AASA (Apple App Site Association) file is reachable over HTTPS at:
+      ```
+      https://flutterdemo.linkhas.com/apple-app-site-association
+      ```
+
+3. Rebuild the iOS app after any changes to `Info.plist` or entitlements.
 
 ### 🔹 Flutter Flavors (Multiple Environments)
 
@@ -266,7 +289,7 @@ Example for a `production` flavor:
     <key>CFBundleURLSchemes</key>
     <array>
       <string>song</string>
-      <string>newSong</string>
+      <string>TravelproductDetail</string>
     </array>
   </dict>
 </array>
@@ -278,12 +301,16 @@ Example for a `production` flavor:
 
 ## 🔗 Generating Links
 
-Links are created and managed through the [Dynamic Link Tool](https://backend-dynamiclink.tecocraft.us) web interface.
+### 1️⃣ Via Linkhas Dashboard
 
-1. Register and log in to your account.
-2. Click **Add Project** and fill in your app details — package name, bundle ID, store URLs, and publication status.
+1. Register and log in to your account at [Linkhas Dashboard](https://flutterdemo.linkhas.com).
+2. Click **Add Project** and fill in your app details:
+    - Package Name
+    - Bundle ID
+    - Store URLs & Publication status
+    - **SHA-256 Fingerprint Key**: You **must add your SHA-256 key** when creating the project on the Linkhas dashboard. Adding the SHA-256 key automatically generates the Android Digital Asset Links file (`https://flutterdemo.linkhas.com/.well-known/assetlinks.json`) required for Android App Links domain verification.
 3. Inside the project, go to **View Links → Add Link**.
-4. Set the title, description, and URL schemes. The scheme values must exactly match what is configured in `AndroidManifest.xml` and `Info.plist`.
+4. Set the title, description, and URL schemes (matching `AndroidManifest.xml` and `Info.plist`).
 5. Add a **JSON Data** payload to control in-app navigation:
 
 ```json
@@ -296,25 +323,68 @@ Links are created and managed through the [Dynamic Link Tool](https://backend-dy
 
 ---
 
+### 2️⃣ Programmatically via SDK (Generate Share Link)
+
+To generate dynamic share links programmatically inside your Flutter app, use `MyDeeplinkSdk.generatePublicLink`.
+
+> ⚠️ **Important:** To generate share links, you **must include your `clientId`** in the API call. The `clientId` is generated when you create your project on the Linkhas Dashboard.
+
+```dart
+try {
+  final response = await MyDeeplinkSdk.generatePublicLink(
+    clientId: 'YOUR_CLIENT_ID', // Client ID obtained from Linkhas Dashboard
+    body: {
+      "title": "Product Title",
+      "description": "Product Description",
+      "android_scheme": "TravelproductDetail",
+      "ios_scheme": "TravelproductDetail",
+      "data": {
+        "screen_name": "product",
+        "productId": "SKU-10024",
+      },
+    },
+  );
+
+  final shortCode = response['data']['short_code'];
+  final generatedShareLink = 'https://flutterdemo.linkhas.com/$shortCode';
+  print('Generated Share Link: $generatedShareLink');
+} catch (e) {
+  print('Failed to generate public link: $e');
+}
+```
+
+---
+
 ## 📖 API Reference
 
 ### `MyDeeplinkSdk.init(Map<String, dynamic> config)`
 Initialises the SDK. Must be called before `startSmartLinking`.
 
+| Config Key | Type | Description |
+|---|---|---|
+| `app_id` | `String` | Package name / App ID (e.g. `com.yourapp.package`) |
+| `path_short_code_hosts` | `List<String>` | List of host domains to parse short code from path (e.g. `["flutterdemo.linkhas.com"]`) |
+
 ### `MyDeeplinkSdk.startSmartLinking({ required SmartLinkingOptions options })`
 Starts listening for incoming deep link events and calls the provided callbacks.
+
+### `MyDeeplinkSdk.generatePublicLink({ required String clientId, required Map<String, dynamic> body })`
+Generates a public share link programmatically.
+- `clientId`: **Required** Client ID generated from the Linkhas Dashboard (sent in API header).
+- `body`: Payload containing link settings (`title`, `description`, `android_scheme`, `ios_scheme`, `data`, etc.).
 
 ### `SmartLinkingOptions`
 
 | Option | Type | Description |
 |---|---|---|
 | `onSuccess` | `Function(DynamicLinkData)` | Called when a deep link is successfully resolved |
+| `onError` | `Function(Object, StackTrace)` | Called when link resolution encounters an error |
 
 ### `DynamicLinkData`
 
 | Field | Type | Description |
 |---|---|---|
-| `customData` | `Map<String, dynamic>` | The JSON payload defined when the link was created in the Dynamic Link Tool |
+| `customData` | `Map<String, dynamic>` | The JSON payload defined when the link was created |
 
 ---
 
@@ -342,9 +412,6 @@ Once the app has been published at least once, you can test updated routing logi
 
 ---
 
-
----
-
 ## 📋 Requirements
 
 - Flutter >= 3.0.0
@@ -354,17 +421,6 @@ Once the app has been published at least once, you can test updated routing logi
 
 ---
 
-## 🤝 Contributing
-
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
 
 ## 📄 License
 
@@ -376,7 +432,7 @@ MIT © [Tecocraft](https://github.com/tecocraft)
 
 - **Links not opening on Android**
     - Verify your `AndroidManifest.xml` intent-filters and ensure each scheme has its own separate filter block.
-    - For App Links, confirm `assetlinks.json` is reachable and the SHA-256 fingerprints match your signing key.
+    - Confirm your `https://flutterdemo.linkhas.com/.well-known/assetlinks.json` file is accessible online and that the SHA-256 fingerprints match your signing key added on the Linkhas dashboard.
     - Rebuild the app after any manifest changes.
 
 - **Links not opening on iOS**
@@ -388,9 +444,3 @@ MIT © [Tecocraft](https://github.com/tecocraft)
     - Ensure the app is published on the App Store or Google Play Store. Deferred deep links do not work with unpublished apps.
 
 ---
-
-## 🙋‍♀️ Support
-
-- 📧 Email: support@linkhas.com
-- 🐛 Issues: [GitHub Issues](https://github.com/linkhas/Flutter-Dynamic-Link-SDK/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/linkhas/Flutter-Dynamic-Link-SDK/discussions)

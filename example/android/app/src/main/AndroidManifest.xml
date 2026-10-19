@@ -48,12 +48,13 @@
             </intent-filter>
             <!-- HTTPS App Link (needs verified assetlinks.json on host for auto-verify). -->
             <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!--  // name of your Asset Links Slug with .linkhas.com ex. abc.linkhas.com   -->
                 <data
                     android:scheme="https"
-                    android:host="backend-dynamiclink.tecocraft.us"
+                    android:host="abc.linkhas.com"
                     android:pathPrefix="/" />
             </intent-filter>
         </activity>

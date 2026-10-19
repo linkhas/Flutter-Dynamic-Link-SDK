@@ -7,7 +7,7 @@
   },
   "sdk_init": {
     "app_id": "com.tecocraft.sdk.my_deeplink_sdk_example",
-    "path_short_code_hosts": ["backend-dynamiclink.tecocraft.us"]
+    "path_short_code_hosts": ["backend.linkhas.com"]
   },
   "sample_short_code": "GGkuXr",
   "sample_api_response_shape": {
@@ -47,7 +47,7 @@
     {
       "id": "https_path_short_code",
       "title": "HTTPS — short code in path (dashboard link)",
-      "url": "https://backend-dynamiclink.tecocraft.us/GGkuXr",
+      "url": "https://backend.linkhas.com/GGkuXr",
       "notes": "Opens in browser if App Link is not verified. Use adb to force-open the app, or custom-scheme tests first."
     },
     {
@@ -64,7 +64,7 @@
     }
   ],
   "adb": {
-    "android_https": "adb shell am start -a android.intent.action.VIEW -d \"https://backend-dynamiclink.tecocraft.us/GGkuXr\" com.tecocraft.sdk.my_deeplink_sdk_example",
+    "android_https": "adb shell am start -a android.intent.action.VIEW -d \"https://backend.linkhas.com/GGkuXr\" com.tecocraft.sdk.my_deeplink_sdk_example",
     "android_custom_query": "adb shell am start -a android.intent.action.VIEW -d \"mydeeplinksdk://open?short_code=GGkuXr\" com.tecocraft.sdk.my_deeplink_sdk_example"
   }
 }
